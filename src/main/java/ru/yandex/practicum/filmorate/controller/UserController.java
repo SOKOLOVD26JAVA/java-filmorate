@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
@@ -13,7 +14,7 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    Map<Integer, User> users = new HashMap<>();
+    protected Map<Integer, User> users = new HashMap<>();
 
     @GetMapping
     public ResponseEntity<Collection<User>> getAllUsers() {
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addUser(@RequestBody User user) {
+    public ResponseEntity<String> addUser(@Valid @RequestBody User user) {
         if (users.containsKey(user.getId())) {
             throw new ValidationException("Данный пользователь уже добавлен");
         }
@@ -35,12 +36,12 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<String> updateUser(@RequestBody User newUser) {
+    public ResponseEntity<String> updateUser(@Valid @RequestBody User newUser) {
         userValidation(newUser);
-        if (users.containsKey(newUser.getId())){
+        if (users.containsKey(newUser.getId())) {
             users.put(newUser.getId(), newUser);
             return ResponseEntity.ok("Пользователь успешно обновлен");
-        }else {
+        } else {
             return ResponseEntity.badRequest().body("Обновление не удалось");
         }
 

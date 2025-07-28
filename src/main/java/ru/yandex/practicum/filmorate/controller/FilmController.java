@@ -51,7 +51,7 @@ public class FilmController {
 
 
     private void filmValidation(Film film) {
-        if (film.getDuration().isNegative()){
+        if (film.getDuration().isNegative()) {
             throw new ValidationException("Продолжительность не может быть отрицательной");
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
