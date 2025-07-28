@@ -26,7 +26,7 @@ public class FilmControllerTest {
     void postFilmValidTest() throws IOException, InterruptedException {
 
 
-        String json = "{ \"id\": 1, \"email\": \"dimonKrytoi@Yandex.ru\", \"login\": \"ДимонКрутой\", \"name\": \"Дмитрий\", \"birthday\": \"1988-07-15\" }";
+        String json = "{ \"id\": 1, \"name\": \"Крепкий орешек\", \"description\": \"Что то невероятное\", \"releaseDate\": \"2000-07-15\", \"duration\": \"PT1H51M\" }";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -43,14 +43,7 @@ public class FilmControllerTest {
     void getFilmsValidTest() throws IOException, InterruptedException {
 
 
-        String json = """
-                {
-                  "id": 1,
-                  "name": "Крепкий орешек",
-                  "description": "Что то невероятное",
-                  "releaseDate": "2000-07-15",
-                  "duration": "PT1H51M"
-                }""";
+        String json = "{ \"id\": 1, \"name\": \"Крепкий орешек\", \"description\": \"Что то невероятное\", \"releaseDate\": \"2000-07-15\", \"duration\": \"PT1H51M\" }";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -76,15 +69,7 @@ public class FilmControllerTest {
 
 
 //		"-" в длительности
-        String json = """
-                {
-                  "id": 1,
-                  "name": "Крепкий орешек",
-                  "description": "Что то невероятное",
-                  "releaseDate": "2000-07-15",
-                  "duration": "-PT1H51M"
-                }""";
-
+        String json = "{ \"id\": 1, \"name\": \"Крепкий орешек\", \"description\": \"Что то невероятное\", \"releaseDate\": \"2000-07-15\", \"duration\": \"-PT1H51M\" }";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:" + port + "/films"))
@@ -101,14 +86,7 @@ public class FilmControllerTest {
 
 
 //		Пустое имя
-        String json = """
-                {
-                  "id": 1,
-                  "name": " ",
-                  "description": "Что то невероятное",
-                  "releaseDate": "2000-07-15",
-                  "duration": "PT1H51M"
-                }""";
+        String json = "{ \"id\": 1, \"name\": \"   \", \"description\": \"Что то невероятное\", \"releaseDate\": \"2000-07-15\", \"duration\": \"PT1H51M\" }";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -124,16 +102,8 @@ public class FilmControllerTest {
     @Test
     void postFilmUnValidDescriptionTest() throws IOException, InterruptedException {
 
-
 //		Длинна описания более 200 символов
-        String json = """
-                {
-                   "id": 1,
-                   "name": "Крепкий орешек",
-                   "description": "Фильм очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, оченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьочень интересный)",
-                   "releaseDate": "2000-07-15",
-                   "duration": "PT1H51M"
-                 }""";
+        String json = "{ \"id\": 1, \"name\": \"Крепкий орешек\", \"description\": \"Фильм очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, оченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьочень\", \"releaseDate\": \"2000-07-15\", \"duration\": \"PT1H51M\" }";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -151,14 +121,7 @@ public class FilmControllerTest {
 
 
         // Дата: "1895-12-27"
-        String json = """
-                {
-                  "id": 1,
-                  "name": "Крепкий орешек",
-                  "description": "Что то невероятное",
-                  "releaseDate": "1895-12-27",
-                  "duration": "PT1H51M"
-                }""";
+        String json = "{ \"id\": 1, \"name\": \"Крепкий орешек\", \"description\": \"Что то невероятное\", \"releaseDate\": \"1895-12-27\", \"duration\": \"PT1H51M\" }";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
