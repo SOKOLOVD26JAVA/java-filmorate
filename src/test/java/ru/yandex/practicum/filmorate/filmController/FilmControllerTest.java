@@ -24,6 +24,8 @@ public class FilmControllerTest {
 
     @Test
     void postFilmValidTest() throws IOException, InterruptedException {
+
+
         String json = """
                 {
                   "id": 1,
@@ -46,6 +48,8 @@ public class FilmControllerTest {
 
     @Test
     void getFilmsValidTest() throws IOException, InterruptedException {
+
+
         String json = """
                 {
                   "id": 1,
@@ -76,6 +80,8 @@ public class FilmControllerTest {
 
     @Test
     void postFilmUnValidDurationTest() throws IOException, InterruptedException {
+
+
 //		"-" в длительности
         String json = """
                 {
@@ -99,6 +105,8 @@ public class FilmControllerTest {
 
     @Test
     void postFilmUnValidNameTest() throws IOException, InterruptedException {
+
+
 //		Пустое имя
         String json = """
                 {
@@ -122,6 +130,8 @@ public class FilmControllerTest {
 
     @Test
     void postFilmUnValidDescriptionTest() throws IOException, InterruptedException {
+
+
 //		Длинна описания более 200 символов
         String json = """
                 {
@@ -145,6 +155,8 @@ public class FilmControllerTest {
 
     @Test
     void postFilmUnValidReleaseDateTest() throws IOException, InterruptedException {
+
+
         // Дата: "1895-12-27"
         String json = """
                 {

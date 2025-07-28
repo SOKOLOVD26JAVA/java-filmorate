@@ -25,6 +25,8 @@ public class UserControllerTest {
 
     @Test
     void postUserValidTest() throws IOException, InterruptedException {
+
+
         String json = """
                 {
                   "id": 1,
@@ -47,6 +49,8 @@ public class UserControllerTest {
 
     @Test
     void postUserWithOutNameValidTest() throws IOException, InterruptedException {
+
+
         String json = """
                 {
                   "id": 1,
@@ -69,6 +73,8 @@ public class UserControllerTest {
 
     @Test
     void getUsersValidTest() throws IOException, InterruptedException {
+
+
         String json = """
                 {
                   "id": 1,
@@ -100,6 +106,8 @@ public class UserControllerTest {
 
     @Test
     void postUserUnValidEmailTest() throws IOException, InterruptedException {
+
+
 //		Кривая почта
         String json = """
                 {
@@ -123,6 +131,8 @@ public class UserControllerTest {
 
     @Test
     void postUserUnValidLoginTest() throws IOException, InterruptedException {
+
+
 //		Пробелы в поле login
         String json = """
                 {
@@ -146,6 +156,8 @@ public class UserControllerTest {
 
     @Test
     void postUserUnValidDateTest() throws IOException, InterruptedException {
+
+
 //		Дата рождения в будущем
         String json = """
                 {
