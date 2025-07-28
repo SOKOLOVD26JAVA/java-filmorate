@@ -26,13 +26,13 @@ public class UserControllerTest {
     @Test
     void postUserValidTest() throws IOException, InterruptedException {
         String json = """
-            {
-              "id": 1,
-              "email": "dimonKrytoi@Yandex.ru",
-              "login": "ДимонКрутой",
-              "name": "Дмитрий",
-              "birthday": "1988-07-15"
-            }""";
+                {
+                  "id": 1,
+                  "email": "dimonKrytoi@Yandex.ru",
+                  "login": "ДимонКрутой",
+                  "name": "Дмитрий",
+                  "birthday": "1988-07-15"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -48,13 +48,13 @@ public class UserControllerTest {
     @Test
     void postUserWithOutNameValidTest() throws IOException, InterruptedException {
         String json = """
-            {
-              "id": 1,
-              "email": "dimonKrytoi@Yandex.ru",
-              "login": "ДимонКрутой",
-              "name": "     ",
-              "birthday": "1988-07-15"
-            }""";
+                {
+                  "id": 1,
+                  "email": "dimonKrytoi@Yandex.ru",
+                  "login": "ДимонКрутой",
+                  "name": "     ",
+                  "birthday": "1988-07-15"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -70,13 +70,13 @@ public class UserControllerTest {
     @Test
     void getUsersValidTest() throws IOException, InterruptedException {
         String json = """
-            {
-              "id": 1,
-              "email": "dimonKrytoi@Yandex.ru",
-              "login": "ДимонКрутой",
-              "name": "Дмитрий",
-              "birthday": "1988-07-15"
-            }""";
+                {
+                  "id": 1,
+                  "email": "dimonKrytoi@Yandex.ru",
+                  "login": "ДимонКрутой",
+                  "name": "Дмитрий",
+                  "birthday": "1988-07-15"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -93,8 +93,8 @@ public class UserControllerTest {
                 .GET()
                 .build();
 
-        HttpResponse<String> getResponse = client.send(getRequest,HttpResponse.BodyHandlers.ofString());
-        assertEquals(200,getResponse.statusCode());
+        HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, getResponse.statusCode());
     }
 
 
@@ -102,13 +102,13 @@ public class UserControllerTest {
     void postUserUnValidEmailTest() throws IOException, InterruptedException {
 //		Кривая почта
         String json = """
-				{
-				  "id": 1,
-				  "email": "ДимонКрутобокий@",
-				  "login": "ДимонКрутой",
-				  "name": "Дмитрий",
-				  "birthday": "1988-07-15"
-				}""";
+                {
+                  "id": 1,
+                  "email": "ДимонКрутобокий@",
+                  "login": "ДимонКрутой",
+                  "name": "Дмитрий",
+                  "birthday": "1988-07-15"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -125,13 +125,13 @@ public class UserControllerTest {
     void postUserUnValidLoginTest() throws IOException, InterruptedException {
 //		Пробелы в поле login
         String json = """
-				{
-				  "id": 1,
-				  "email": "ДимонКрутобокий@yandex.ru",
-				  "login": "  Логину не нравятся пробелы  ",
-				  "name": "Дмитрий",
-				  "birthday": "1988-07-15"
-				}""";
+                {
+                  "id": 1,
+                  "email": "ДимонКрутобокий@yandex.ru",
+                  "login": "  Логину не нравятся пробелы  ",
+                  "name": "Дмитрий",
+                  "birthday": "1988-07-15"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -148,13 +148,13 @@ public class UserControllerTest {
     void postUserUnValidDateTest() throws IOException, InterruptedException {
 //		Дата рождения в будущем
         String json = """
-				{
-				  "id": 1,
-				  "email": "ДимонКрутобокий@yandex.ru",
-				  "login": "Логинунравитсябезпробелов",
-				  "name": "Дмитрий",
-				  "birthday": "2030-07-15"
-				}""";
+                {
+                  "id": 1,
+                  "email": "ДимонКрутобокий@yandex.ru",
+                  "login": "Логинунравитсябезпробелов",
+                  "name": "Дмитрий",
+                  "birthday": "2030-07-15"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

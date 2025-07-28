@@ -25,13 +25,13 @@ public class FilmControllerTest {
     @Test
     void postFilmValidTest() throws IOException, InterruptedException {
         String json = """
-            {
-              "id": 1,
-              "name": "Крепкий орешек",
-              "description": "Что то невероятное",
-              "releaseDate": "2000-07-15",
-              "duration": "PT1H51M"
-            }""";
+                {
+                  "id": 1,
+                  "name": "Крепкий орешек",
+                  "description": "Что то невероятное",
+                  "releaseDate": "2000-07-15",
+                  "duration": "PT1H51M"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -47,13 +47,13 @@ public class FilmControllerTest {
     @Test
     void getFilmsValidTest() throws IOException, InterruptedException {
         String json = """
-            {
-              "id": 1,
-              "name": "Крепкий орешек",
-              "description": "Что то невероятное",
-              "releaseDate": "2000-07-15",
-              "duration": "PT1H51M"
-            }""";
+                {
+                  "id": 1,
+                  "name": "Крепкий орешек",
+                  "description": "Что то невероятное",
+                  "releaseDate": "2000-07-15",
+                  "duration": "PT1H51M"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -70,21 +70,21 @@ public class FilmControllerTest {
                 .GET()
                 .build();
 
-        HttpResponse<String> getResponse = client.send(getRequest,HttpResponse.BodyHandlers.ofString());
-        assertEquals(200,getResponse.statusCode());
+        HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, getResponse.statusCode());
     }
 
     @Test
     void postFilmUnValidDurationTest() throws IOException, InterruptedException {
 //		"-" в длительности
         String json = """
-            {
-              "id": 1,
-              "name": "Крепкий орешек",
-              "description": "Что то невероятное",
-              "releaseDate": "2000-07-15",
-              "duration": "-PT1H51M"
-            }""";
+                {
+                  "id": 1,
+                  "name": "Крепкий орешек",
+                  "description": "Что то невероятное",
+                  "releaseDate": "2000-07-15",
+                  "duration": "-PT1H51M"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -96,17 +96,18 @@ public class FilmControllerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(400, response.statusCode());
     }
+
     @Test
     void postFilmUnValidNameTest() throws IOException, InterruptedException {
 //		Пустое имя
         String json = """
-            {
-              "id": 1,
-              "name": " ",
-              "description": "Что то невероятное",
-              "releaseDate": "2000-07-15",
-              "duration": "PT1H51M"
-            }""";
+                {
+                  "id": 1,
+                  "name": " ",
+                  "description": "Что то невероятное",
+                  "releaseDate": "2000-07-15",
+                  "duration": "PT1H51M"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -123,13 +124,13 @@ public class FilmControllerTest {
     void postFilmUnValidDescriptionTest() throws IOException, InterruptedException {
 //		Длинна описания более 200 символов
         String json = """
-				{
-				   "id": 1,
-				   "name": "Крепкий орешек",
-				   "description": "Фильм очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, оченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьочень интересный)",
-				   "releaseDate": "2000-07-15",
-				   "duration": "PT1H51M"
-				 }""";
+                {
+                   "id": 1,
+                   "name": "Крепкий орешек",
+                   "description": "Фильм очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, очень, оченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьоченьочень интересный)",
+                   "releaseDate": "2000-07-15",
+                   "duration": "PT1H51M"
+                 }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -144,15 +145,15 @@ public class FilmControllerTest {
 
     @Test
     void postFilmUnValidReleaseDateTest() throws IOException, InterruptedException {
-    // Дата: "1895-12-27"
+        // Дата: "1895-12-27"
         String json = """
-            {
-              "id": 1,
-              "name": "Крепкий орешек",
-              "description": "Что то невероятное",
-              "releaseDate": "1895-12-27",
-              "duration": "PT1H51M"
-            }""";
+                {
+                  "id": 1,
+                  "name": "Крепкий орешек",
+                  "description": "Что то невероятное",
+                  "releaseDate": "1895-12-27",
+                  "duration": "PT1H51M"
+                }""";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
