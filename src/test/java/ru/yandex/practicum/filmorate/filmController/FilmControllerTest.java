@@ -26,14 +26,7 @@ public class FilmControllerTest {
     void postFilmValidTest() throws IOException, InterruptedException {
 
 
-        String json = """
-                {
-                  "id": 1,
-                  "name": "Крепкий орешек",
-                  "description": "Что то невероятное",
-                  "releaseDate": "2000-07-15",
-                  "duration": "PT1H51M"
-                }""";
+        String json = "{ \"id\": 1, \"email\": \"dimonKrytoi@Yandex.ru\", \"login\": \"ДимонКрутой\", \"name\": \"Дмитрий\", \"birthday\": \"1988-07-15\" }";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
