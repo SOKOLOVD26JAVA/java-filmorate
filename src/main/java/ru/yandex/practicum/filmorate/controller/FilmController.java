@@ -15,20 +15,21 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
 
+    protected int id = 1;
     protected Map<Integer, Film> films = new HashMap<>();
 
     @GetMapping
     public ResponseEntity<Collection<Film>> getAllFilms() {
-        if (films.isEmpty()) {
-            throw new ValidationException("Список фильмов пуст");
-        } else {
+
             return ResponseEntity.ok(films.values());
-        }
+
     }
 
 
     @PostMapping
     public ResponseEntity<String> postFilm(@Valid @RequestBody Film film) {
+        film.setId(generateID());
+
         if (films.containsKey(film.getId())) {
             throw new ValidationException("Данный фильм уже добавлен");
         }
@@ -39,6 +40,7 @@ public class FilmController {
 
     @PutMapping
     public ResponseEntity<String> updateFilm(@Valid @RequestBody Film newFilm) {
+        newFilm.setId(generateID());
         filmValidation(newFilm);
         if (films.containsKey(newFilm.getId())) {
             films.put(newFilm.getId(), newFilm);
@@ -47,6 +49,10 @@ public class FilmController {
             return ResponseEntity.badRequest().body("Обновление не удалось");
         }
 
+    }
+
+    private int generateID(){
+       return id++;
     }
 
 

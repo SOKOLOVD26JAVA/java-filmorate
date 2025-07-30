@@ -14,19 +14,17 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
+    protected int id = 1;
     protected Map<Integer, User> users = new HashMap<>();
 
     @GetMapping
     public ResponseEntity<Collection<User>> getAllUsers() {
-        if (users.isEmpty()) {
-            throw new ValidationException("Список пользователей пуст.");
-        } else {
             return ResponseEntity.ok(users.values());
-        }
     }
 
     @PostMapping
     public ResponseEntity<String> addUser(@Valid @RequestBody User user) {
+        user.setId(generateID());
         if (users.containsKey(user.getId())) {
             throw new ValidationException("Данный пользователь уже добавлен");
         }
@@ -37,6 +35,7 @@ public class UserController {
 
     @PutMapping
     public ResponseEntity<String> updateUser(@Valid @RequestBody User newUser) {
+        newUser.setId(generateID());
         userValidation(newUser);
         if (users.containsKey(newUser.getId())) {
             users.put(newUser.getId(), newUser);
@@ -45,6 +44,10 @@ public class UserController {
             return ResponseEntity.badRequest().body("Обновление не удалось");
         }
 
+    }
+
+    private int generateID(){
+        return id++;
     }
 
     private void userValidation(User user) {
