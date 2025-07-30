@@ -21,7 +21,7 @@ public class FilmController {
     @GetMapping
     public ResponseEntity<Collection<Film>> getAllFilms() {
 
-            return ResponseEntity.ok(films.values());
+        return ResponseEntity.ok(films.values());
 
     }
 
@@ -51,8 +51,8 @@ public class FilmController {
 
     }
 
-    private int generateID(){
-       return id++;
+    private int generateID() {
+        return id++;
     }
 
 

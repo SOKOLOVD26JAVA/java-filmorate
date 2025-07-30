@@ -19,7 +19,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Collection<User>> getAllUsers() {
-            return ResponseEntity.ok(users.values());
+        return ResponseEntity.ok(users.values());
     }
 
     @PostMapping
@@ -46,7 +46,7 @@ public class UserController {
 
     }
 
-    private int generateID(){
+    private int generateID() {
         return id++;
     }
 
