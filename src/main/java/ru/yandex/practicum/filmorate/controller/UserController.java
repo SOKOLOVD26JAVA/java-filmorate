@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -23,25 +24,21 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addUser(@Valid @RequestBody User user) {
+    public User addUser(@Valid @RequestBody User user) {
         user.setId(generateID());
-        if (users.containsKey(user.getId())) {
-            throw new ValidationException("Данный пользователь уже добавлен");
-        }
         userValidation(user);
         users.put(user.getId(), user);
-        return ResponseEntity.ok("Пользователь " + user.getName() + " успешно добавлен");
+        return user;
     }
 
     @PutMapping
-    public ResponseEntity<String> updateUser(@Valid @RequestBody User newUser) {
-        newUser.setId(generateID());
+    public User updateUser(@Valid @RequestBody User newUser) {
         userValidation(newUser);
         if (users.containsKey(newUser.getId())) {
             users.put(newUser.getId(), newUser);
-            return ResponseEntity.ok("Пользователь успешно обновлен");
+            return newUser;
         } else {
-            return ResponseEntity.badRequest().body("Обновление не удалось");
+            throw new NotFoundException("Такого пользователя нет.");
         }
 
     }
@@ -51,9 +48,8 @@ public class UserController {
     }
 
     private void userValidation(User user) {
-        if (user.getId() <= 0) {
-            throw new ValidationException("Id должен быть указан");
-        } else if (user.getName().isEmpty() || user.getName().isBlank()) {
+
+        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
     }
