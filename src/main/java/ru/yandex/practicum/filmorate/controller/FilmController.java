@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
@@ -12,10 +13,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-
     protected int id = 1;
     protected Map<Integer, Film> films = new HashMap<>();
 
@@ -28,21 +29,28 @@ public class FilmController {
 
 
     @PostMapping
-    public Film postFilm(@Valid @RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
+        log.info("Попытка добавления фильма {}", film.getName());
         film.setId(generateID());
+        log.info("Для фильма сгенерирован ID: {}.", film.getId());
         filmValidation(film);
+        log.info("При добавлении фильм: {} с ID: {} прошел валидацию по дате релиза.", film.getName(), film.getId());
         films.put(film.getId(), film);
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film newFilm) {
+        log.info("Попытка обновления фильма: {}", newFilm.getName());
         filmValidation(newFilm);
+        log.info("При обновлении фильм: {} с ID: {} прошел валидацию по дате релиза.", newFilm.getName(), newFilm.getId());
         if (films.containsKey(newFilm.getId())) {
             films.put(newFilm.getId(), newFilm);
+            log.info("Фильм: {} успешно обновлен.", newFilm.getName());
             return newFilm;
         } else {
-            throw new NotFoundException("Такого пользователя нет");
+            log.warn("Фильм: {} с ID: {} отсутствует в списке.", newFilm.getName(), newFilm.getId());
+            throw new NotFoundException("Такого фильма нет.");
         }
 
     }
@@ -54,6 +62,7 @@ public class FilmController {
 
     private void filmValidation(Film film) {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.info("Фильм: {} с ID: {} не прошел валидацию.", film.getName(), film.getId());
             throw new ValidationException("Дата релиза фильмы не может быть раньше 28 декабря 1895 года");
         }
     }

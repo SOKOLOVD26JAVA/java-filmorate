@@ -10,12 +10,12 @@ import java.time.LocalDate;
 @Data
 public class User {
 
-    int id;
+    private int id;
     @Email
-    String email;
+    private String email;
     @Pattern(regexp = "\\S+", message = "Поле login не допускает наличие пробелов")
-    String login;
-    String name;
+    private String login;
+    private String name;
     @Past(message = "Дата рождения не может быть в будущем")
-    LocalDate birthday;
+    private LocalDate birthday;
 }
