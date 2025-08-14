@@ -8,12 +8,15 @@ import lombok.Data;
 
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
  */
 @Data
 public class Film {
+    private Set<Integer> likeList = new HashSet<>();
     private int id;
     @NotBlank(message = "Название не может быть пустым")
     private String name;
@@ -22,4 +25,8 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+
+    public int getLikesCount(){
+        return likeList.size();
+    }
 }
