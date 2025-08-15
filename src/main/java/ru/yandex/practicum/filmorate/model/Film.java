@@ -26,7 +26,7 @@ public class Film {
     @Positive
     private int duration;
 
-    public int getLikesCount(){
+    public int getLikesCount() {
         return likeList.size();
     }
 }
