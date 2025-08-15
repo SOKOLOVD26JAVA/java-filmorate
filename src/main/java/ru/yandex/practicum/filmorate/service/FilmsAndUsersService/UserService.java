@@ -70,21 +70,21 @@ public class UserService {
         log.info("Попытка получения общих друзей у пользователей с ID: {} и {}.", id, otherId);
         checkUsers(id, otherId);
         Map<Integer, Integer> countMap = new HashMap<>();
-        Collection<Integer> AllFriends = new ArrayList<>();
+        Collection<Integer> allFriends = new ArrayList<>();
         if (inMemoryUserStorage.getUsers().get(id).getFriendList() != null) {
-            AllFriends.addAll(inMemoryUserStorage.getUsers().get(id).getFriendList());
+            allFriends.addAll(inMemoryUserStorage.getUsers().get(id).getFriendList());
         } else {
             log.warn("Список друзей пользователя с ID: {} пуст.", id);
             throw new NotFoundException("Список друзей пользователя с ID: " + id + " пуст.");
         }
         if (inMemoryUserStorage.getUsers().get(otherId).getFriendList() != null) {
-            AllFriends.addAll(inMemoryUserStorage.getUsers().get(otherId).getFriendList());
+            allFriends.addAll(inMemoryUserStorage.getUsers().get(otherId).getFriendList());
             log.info("Списки друзей объеденины.");
         } else {
             log.warn("Список друзей пользователя с ID: {} пуст.", otherId);
             throw new NotFoundException("Список друзей пользователя с ID: " + otherId + " пуст.");
         }
-        for (Integer userID : AllFriends) {
+        for (Integer userID : allFriends) {
             countMap.put(userID, countMap.getOrDefault(userID, 0) + 1);
         }
         Collection<User> commonFriends = new ArrayList<>();
