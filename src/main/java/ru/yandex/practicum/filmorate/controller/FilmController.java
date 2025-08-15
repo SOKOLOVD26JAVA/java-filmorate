@@ -19,7 +19,8 @@ public class FilmController {
 
     private final InMemoryFilmStorage inMemoryFilmStorage;
     private final FilmService filmService;
-//Насколько я понял, если у нас единственный конструктор, то можно убрать эту аннотацию, но для себя оставил, если критично - уберу.))
+
+    //Насколько я понял, если у нас единственный конструктор, то можно убрать эту аннотацию, но для себя оставил, если критично - уберу.))
     @Autowired
     public FilmController(InMemoryFilmStorage inMemoryFilmStorage, FilmService filmService) {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
@@ -44,7 +45,7 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}")
     public ResponseEntity<Film> addLike(@PathVariable int filmId, @PathVariable int userId) {
-         return ResponseEntity.ok(filmService.addLikeToFilm(filmId,userId));
+        return ResponseEntity.ok(filmService.addLikeToFilm(filmId, userId));
     }
 
     @GetMapping("/popular")
@@ -54,8 +55,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
-    public ResponseEntity<Film> deleteLikeFromFilm(@PathVariable int filmId, @PathVariable int userId){
-        Film filmForDeleteLike = filmService.deleteLikeFromFilm(filmId,userId);
+    public ResponseEntity<Film> deleteLikeFromFilm(@PathVariable int filmId, @PathVariable int userId) {
+        Film filmForDeleteLike = filmService.deleteLikeFromFilm(filmId, userId);
         return ResponseEntity.ok(filmForDeleteLike);
     }
 
