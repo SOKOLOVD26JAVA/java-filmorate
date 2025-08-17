@@ -16,7 +16,6 @@ import java.util.Set;
  */
 @Data
 public class Film {
-    private Set<Integer> likeList = new HashSet<>();
     private int id;
     @NotBlank(message = "Название не может быть пустым")
     private String name;
@@ -25,8 +24,9 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private Set<Integer> likeSet = new HashSet<>();
 
     public int getLikesCount() {
-        return likeList.size();
+        return likeSet.size();
     }
 }

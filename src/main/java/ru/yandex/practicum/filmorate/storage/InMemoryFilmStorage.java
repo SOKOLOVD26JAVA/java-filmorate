@@ -1,29 +1,27 @@
-package ru.yandex.practicum.filmorate.service.storage;
+package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static ru.yandex.practicum.filmorate.service.FilmService.filmValidation;
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
     protected int id = 1;
-    @Getter
     protected Map<Integer, Film> films = new HashMap<>();
 
+
     @Override
-    public ResponseEntity<Collection<Film>> getAllFilms() {
-        return ResponseEntity.ok(films.values());
+    public Collection<Film> getFilms() {
+        return films.values();
     }
 
     @Override
@@ -54,18 +52,21 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public ResponseEntity<String> delete(int id) {
-        return null;
+    public Collection<Film> delete(Film film) {
+        log.info("Попытка удаления фильма с ID: {}", film.getId());
+        filmValidation(film);
+        if (films.containsKey(film.getId())) {
+            films.remove(film.getId());
+            log.info("Фильм с ID: {} удален.", film.getId());
+            return films.values();
+        } else {
+            throw new NotFoundException("Такого фильма нет");
+        }
+
     }
 
     private int generateID() {
         return id++;
     }
 
-    private void filmValidation(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Фильм: {} с ID: {} не прошел валидацию.", film.getName(), film.getId());
-            throw new ValidationException("Дата релиза фильмы не может быть раньше 28 декабря 1895 года");
-        }
-    }
 }

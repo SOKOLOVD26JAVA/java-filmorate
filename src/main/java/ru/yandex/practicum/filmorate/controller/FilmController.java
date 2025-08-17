@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmsAndUsersService.FilmService;
-import ru.yandex.practicum.filmorate.service.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
 
@@ -17,30 +17,35 @@ import java.util.Collection;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final InMemoryFilmStorage inMemoryFilmStorage;
+    private final FilmStorage filmStorage;
     private final FilmService filmService;
 
     //Насколько я понял, если у нас единственный конструктор, то можно убрать эту аннотацию, но для себя оставил, если критично - уберу.))
     @Autowired
-    public FilmController(InMemoryFilmStorage inMemoryFilmStorage, FilmService filmService) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
+    public FilmController(FilmStorage filmStorage, FilmService filmService) {
+        this.filmStorage = filmStorage;
         this.filmService = filmService;
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Film>> getAllFilms() {
-        return inMemoryFilmStorage.getAllFilms();
+    public Collection<Film> getAllFilms() {
+        return filmStorage.getFilms();
     }
 
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-        return inMemoryFilmStorage.createFilm(film);
+        return filmStorage.createFilm(film);
+    }
+
+    @DeleteMapping
+    public Collection<Film> removeFilm(@Valid @RequestBody Film film) {
+        return filmStorage.delete(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film newFilm) {
-        return inMemoryFilmStorage.updateFilm(newFilm);
+        return filmStorage.updateFilm(newFilm);
     }
 
     @PutMapping("/{filmId}/like/{userId}")

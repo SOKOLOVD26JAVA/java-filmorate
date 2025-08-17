@@ -1,8 +1,6 @@
-package ru.yandex.practicum.filmorate.service.storage;
+package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -11,18 +9,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ru.yandex.practicum.filmorate.service.UserService.userValidation;
+
 @Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
     protected int id = 1;
-    @Getter
     protected Map<Integer, User> users = new HashMap<>();
 
 
     @Override
-    public ResponseEntity<Collection<User>> getAllUsers() {
-        return ResponseEntity.ok(users.values());
+    public Collection<User> getUsers() {
+        return users.values();
     }
 
     @Override
@@ -51,20 +50,20 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public ResponseEntity<String> delete(int id) {
-        return null;
+    public Collection<User> delete(User user) {
+        log.info("Попытка удаления пользователя с ID: {}", user.getId());
+        userValidation(user);
+        if (users.containsKey(user.getId())) {
+            users.remove(user.getId());
+            log.info("Пользователь с ID: {} удален.", user.getId());
+            return users.values();
+        } else {
+            throw new NotFoundException("Такого фильма нет");
+        }
     }
 
     private int generateID() {
         return id++;
     }
 
-    private void userValidation(User user) {
-
-        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
-            log.warn("При добавлении у пользователя с ID: {} отсутствует поле name. ", user.getId());
-            user.setName(user.getLogin());
-            log.info("В поле name записано поле login. Новое значение: {}", user.getName());
-        }
-    }
 }

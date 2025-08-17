@@ -3,11 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FilmsAndUsersService.UserService;
-import ru.yandex.practicum.filmorate.service.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 
@@ -16,29 +16,29 @@ import java.util.Collection;
 @RequestMapping("/users")
 public class UserController {
 
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
     private final UserService userService;
 
     @Autowired
-    public UserController(InMemoryUserStorage inMemoryUserStorage, UserService userService) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserController(UserStorage userStorage, UserService userService) {
+        this.userStorage = userStorage;
         this.userService = userService;
     }
 
 
     @GetMapping
-    public ResponseEntity<Collection<User>> getAllUsers() {
-        return inMemoryUserStorage.getAllUsers();
+    public Collection<User> getAllUsers() {
+        return userStorage.getUsers();
     }
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        return inMemoryUserStorage.addUser(user);
+        return userStorage.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User newUser) {
-        return inMemoryUserStorage.updateUser(newUser);
+        return userStorage.updateUser(newUser);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

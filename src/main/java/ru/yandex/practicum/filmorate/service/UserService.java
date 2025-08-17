@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.service.FilmsAndUsersService;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 
@@ -13,18 +13,18 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(InMemoryUserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
     public User addToFriends(int userId, int friendId) {
         log.info("Попытка добавления пользователя с ID: {} в друзья к пользователю с ID: {}.", userId, friendId);
         if (checkUsers(userId, friendId)) {
-            User user = inMemoryUserStorage.getUsers().get(userId);
-            User secondUser = inMemoryUserStorage.getUsers().get(friendId);
+            User user = userStorage.getUsers().stream().filter(user1 -> user1.getId() == userId).findFirst().orElse(null);
+            User secondUser = userStorage.getUsers().stream().filter(user1 -> user1.getId() == friendId).findFirst().orElse(null);
             user.getFriendList().add(friendId);
             secondUser.getFriendList().add(userId);
             log.info("Пользователи с ID: {} и {} добавлены в друзья.", userId, friendId);
@@ -35,18 +35,18 @@ public class UserService {
     }
 
     // Почему - то с такой проверкой постман не пускает.((
-    public User deleteFriendFromUser(int id, int friendId) {
-        log.info("Попытка удаления пользователя с ID: {} из друзей у  пользователя с ID: {}.", id, friendId);
-        if (checkUsers(id, friendId)) {
+    public User deleteFriendFromUser(int userId, int friendId) {
+        log.info("Попытка удаления пользователя с ID: {} из друзей у  пользователя с ID: {}.", userId, friendId);
+        if (checkUsers(userId, friendId)) {
 //            if (!inMemoryUserStorage.getUsers().get(id).getFriendList().contains(friendId)) {
 //                throw new NotFoundException("У пользователя с ID " + id +
 //                        " в друзьях отсутствует пользователь с ID " + friendId + ".");
 //            } else {
-            User user = inMemoryUserStorage.getUsers().get(id);
-            User secondUser = inMemoryUserStorage.getUsers().get(friendId);
+            User user = userStorage.getUsers().stream().filter(user1 -> user1.getId() == userId).findFirst().orElse(null);
+            User secondUser = userStorage.getUsers().stream().filter(user1 -> user1.getId() == friendId).findFirst().orElse(null);
             user.getFriendList().remove(friendId);
-            secondUser.getFriendList().remove(id);
-            log.info("Пользователь с ID: {} успешно удален из друзей у пользователя с ID: {}. ", friendId, id);
+            secondUser.getFriendList().remove(userId);
+            log.info("Пользователь с ID: {} успешно удален из друзей у пользователя с ID: {}. ", friendId, userId);
             return user;
 //            }
         }
@@ -55,15 +55,16 @@ public class UserService {
 
     public Collection<User> getUserFriends(int userId) {
         log.info("Попытка получения списка друзей у пользователя с ID: {}.", userId);
-        if (!inMemoryUserStorage.getUsers().containsKey(userId)) {
+        Optional<User> findUser = userStorage.getUsers().stream().filter(user -> user.getId() == userId).findFirst();
+        if (findUser.isEmpty()) {
             log.warn("Пользователь с ID: {} отсутствует.", userId);
             throw new NotFoundException("Пользователь с ID " + userId + " отсутствует.");
+        } else {
+            User user = findUser.get();
+            Collection<User> friendsId = user.getFriendList().stream().flatMap(friendId -> userStorage.getUsers().stream().filter(user1 -> user1.getId() == friendId)).toList();
+            log.info("Список друзей пользователя с ID: {} получен.", userId);
+            return friendsId;
         }
-        User user = inMemoryUserStorage.getUsers().get(userId);
-        Collection<User> friendsId = user.getFriendList().stream().map(id -> inMemoryUserStorage
-                .getUsers().get(id)).toList();
-        log.info("Список друзей пользователя с ID: {} получен.", userId);
-        return friendsId;
     }
 
     public Collection<User> getCommonFriends(int id, int otherId) {
@@ -71,14 +72,16 @@ public class UserService {
         checkUsers(id, otherId);
         Map<Integer, Integer> countMap = new HashMap<>();
         Collection<Integer> allFriends = new ArrayList<>();
-        if (inMemoryUserStorage.getUsers().get(id).getFriendList() != null) {
-            allFriends.addAll(inMemoryUserStorage.getUsers().get(id).getFriendList());
+        Optional<User> mainUser = userStorage.getUsers().stream().filter(user -> user.getId() == id).findFirst();
+        Optional<User> otherUser = userStorage.getUsers().stream().filter(user -> user.getId() == otherId).findFirst();
+        if (!mainUser.get().getFriendList().isEmpty()) {
+            allFriends.addAll(mainUser.get().getFriendList());
         } else {
             log.warn("Список друзей пользователя с ID: {} пуст.", id);
             throw new NotFoundException("Список друзей пользователя с ID: " + id + " пуст.");
         }
-        if (inMemoryUserStorage.getUsers().get(otherId).getFriendList() != null) {
-            allFriends.addAll(inMemoryUserStorage.getUsers().get(otherId).getFriendList());
+        if (!otherUser.get().getFriendList().isEmpty()) {
+            allFriends.addAll(otherUser.get().getFriendList());
             log.info("Списки друзей объеденины.");
         } else {
             log.warn("Список друзей пользователя с ID: {} пуст.", otherId);
@@ -90,7 +93,11 @@ public class UserService {
         Collection<User> commonFriends = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
             if (entry.getValue() > 1) {
-                commonFriends.add(inMemoryUserStorage.getUsers().get(entry.getKey()));
+                Integer friendId = entry.getKey();
+                userStorage.getUsers().stream()
+                        .filter(user -> user.getId() == friendId)
+                        .findFirst()
+                        .ifPresent(commonFriends::add);
             }
         }
         log.info("Список общих друзей возвращен.");
@@ -99,12 +106,23 @@ public class UserService {
 
     private boolean checkUsers(int userId, int friendId) {
         log.info("Проверка пользователей пл спискам.");
-        if (!inMemoryUserStorage.getUsers().containsKey(userId)) {
+        Optional<User> findUser = userStorage.getUsers().stream().filter(user -> user.getId() == userId).findFirst();
+        Optional<User> findFriend = userStorage.getUsers().stream().filter(user -> user.getId() == friendId).findFirst();
+        if (findUser.isEmpty()) {
             throw new NotFoundException("Пользователь с ID " + userId + " не найден.");
-        } else if (!inMemoryUserStorage.getUsers().containsKey(friendId)) {
+        } else if (findFriend.isEmpty()) {
             throw new NotFoundException("Пользователь с ID " + friendId + " не найден.");
         } else {
             return true;
+        }
+    }
+
+    public static void userValidation(User user) {
+
+        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
+            log.warn("При добавлении у пользователя с ID: {} отсутствует поле name. ", user.getId());
+            user.setName(user.getLogin());
+            log.info("В поле name записано поле login. Новое значение: {}", user.getName());
         }
     }
 }
