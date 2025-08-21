@@ -62,6 +62,11 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    @Override
+    public User getUser(int id) {
+        return users.get(id);
+    }
+
     private int generateID() {
         return id++;
     }

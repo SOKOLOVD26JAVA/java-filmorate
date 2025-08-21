@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static ru.yandex.practicum.filmorate.service.FilmService.filmValidation;
 
@@ -63,6 +64,11 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException("Такого фильма нет");
         }
 
+    }
+
+    @Override
+    public Film getFilm(int id) {
+        return films.get(id);
     }
 
     private int generateID() {

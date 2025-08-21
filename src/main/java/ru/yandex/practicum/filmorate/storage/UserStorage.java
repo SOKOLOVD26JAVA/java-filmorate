@@ -14,4 +14,6 @@ public interface UserStorage {
     public User updateUser(User newUser);
 
     public Collection<User> delete(User user);
+
+    public User getUser(int id);
 }
