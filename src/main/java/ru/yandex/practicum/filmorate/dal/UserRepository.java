@@ -117,10 +117,6 @@ public class UserRepository {
                 "WHERE f1.user_id != f2.user_id";
 
         List<User> commonFriends = jdbc.query(query, mapper, userId, friendId);
-        if (commonFriends.isEmpty()) {
-            log.warn("Не удалось получить список общих друзей.");
-            throw new NotFoundException("Ошибка получения общих друзей.");
-        }
         log.info("Список общих друзей возвращен.");
         return commonFriends;
     }

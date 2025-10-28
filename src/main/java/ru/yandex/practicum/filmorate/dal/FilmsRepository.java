@@ -7,12 +7,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.mappers.FilmGenreRowMapper;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.dal.mappers.GenreRowMapper;
 import ru.yandex.practicum.filmorate.dal.mappers.MpaRowMapper;
 import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
@@ -21,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -31,8 +34,11 @@ public class FilmsRepository {
     private final FilmRowMapper mapper;
     private final MpaRowMapper mpaMapper;
     private final GenreRowMapper genreMapper;
+    private final FilmGenreRowMapper filmGenreMapper;
 
-    String allFilmsQuery = "SELECT * FROM films";
+    String allFilmsQuery = "SELECT f.*, m.mpa_id, m.mpa_name " +
+            "FROM films AS f " +
+            "JOIN mpa AS m ON f.mpa_id = m.mpa_id";
 
     String filmQuery = "SELECT * FROM films WHERE film_id = ?";
 
@@ -44,14 +50,18 @@ public class FilmsRepository {
 
     String checkGenreQuery = "SELECT * FROM genres WHERE genre_id = ?";
 
+    String allFilmGenreQuery = "SELECT fg.film_id, g.genre_id, g.genre_name " +
+            "FROM film_genre AS fg " +
+            "JOIN genres AS g ON fg.genre_id = g.genre_id";
+
     public List<Film> findAll() {
         try {
             List<Film> films = jdbc.query(allFilmsQuery, mapper);
+            List<FilmGenre> fg = jdbc.query(allFilmGenreQuery, filmGenreMapper);
             for (Film film : films) {
-                Mpa mpa = jdbc.queryForObject(mpaQuery, mpaMapper, film.getMpaId());
-                List<Genre> genres = jdbc.query(genreQuery, genreMapper, film.getId());
-                film.setMpa(mpa);
-                film.setGenres(genres);
+                List<Genre> genre = fg.stream().filter(filmGenre -> filmGenre.getFilmId() == film.getId()).
+                        map(FilmGenre::getGenre).collect(Collectors.toList());
+                film.setGenres(genre);
             }
             log.info("Список фильмов возвращен.");
             return films;
@@ -189,19 +199,20 @@ public class FilmsRepository {
 
     public List<Film> getMostPopularFilm(int count) {
         try {
-            String query = "SELECT f.*, COUNT(l.user_id) AS likes_count " +
+            String query = "SELECT f.*, m.mpa_id, m.mpa_name,  COUNT(l.user_id) AS likes_count " +
                     "FROM films AS f " +
                     "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                    "JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
                     "GROUP BY f.film_id " +
                     "ORDER BY likes_count DESC " +
                     "LIMIT ?";
 
             List<Film> popularFilms = jdbc.query(query, mapper, count);
+            List<FilmGenre> fg = jdbc.query(allFilmGenreQuery, filmGenreMapper);
             for (Film film : popularFilms) {
-                Mpa mpa = jdbc.queryForObject(mpaQuery, mpaMapper, film.getMpaId());
-                List<Genre> genres = jdbc.query(genreQuery, genreMapper, film.getId());
-                film.setMpa(mpa);
-                film.setGenres(genres);
+                List<Genre> genre = fg.stream().filter(filmGenre -> filmGenre.getFilmId() == film.getId()).
+                        map(FilmGenre::getGenre).collect(Collectors.toList());
+                film.setGenres(genre);
             }
             log.info("Наиболее популярные фильмы возвращены.");
             return popularFilms;
