@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 @Component
 public class FilmGenreRowMapper implements RowMapper<FilmGenre> {
 

@@ -59,8 +59,8 @@ public class FilmsRepository {
             List<Film> films = jdbc.query(allFilmsQuery, mapper);
             List<FilmGenre> fg = jdbc.query(allFilmGenreQuery, filmGenreMapper);
             for (Film film : films) {
-                List<Genre> genre = fg.stream().filter(filmGenre -> filmGenre.getFilmId() == film.getId()).
-                        map(FilmGenre::getGenre).collect(Collectors.toList());
+                List<Genre> genre = fg.stream().filter(filmGenre -> filmGenre.getFilmId() == film.getId())
+                        .map(FilmGenre::getGenre).collect(Collectors.toList());
                 film.setGenres(genre);
             }
             log.info("Список фильмов возвращен.");
@@ -210,8 +210,8 @@ public class FilmsRepository {
             List<Film> popularFilms = jdbc.query(query, mapper, count);
             List<FilmGenre> fg = jdbc.query(allFilmGenreQuery, filmGenreMapper);
             for (Film film : popularFilms) {
-                List<Genre> genre = fg.stream().filter(filmGenre -> filmGenre.getFilmId() == film.getId()).
-                        map(FilmGenre::getGenre).collect(Collectors.toList());
+                List<Genre> genre = fg.stream().filter(filmGenre -> filmGenre.getFilmId() == film.getId())
+                        .map(FilmGenre::getGenre).collect(Collectors.toList());
                 film.setGenres(genre);
             }
             log.info("Наиболее популярные фильмы возвращены.");
