@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class GenreRowMapper implements RowMapper<Genre> {
