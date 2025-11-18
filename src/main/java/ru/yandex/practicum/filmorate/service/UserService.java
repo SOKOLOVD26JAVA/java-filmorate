@@ -2,95 +2,28 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.dal.UserRepository;
+import ru.yandex.practicum.filmorate.dto.UserDto;
+
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
 @Service
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
-
-    public Collection<User> getUsers() {
-        return userStorage.getUsers();
-    }
-
-    public User addUser(User user) {
-        return userStorage.addUser(user);
-    }
-
-    public User updateUser(User user) {
-        return userStorage.updateUser(user);
-    }
-
-    public Collection<User> deleteUser(User user) {
-        return userStorage.delete(user);
-    }
-
-    public User addToFriends(int userId, int friendId) {
-        log.info("Попытка добавления пользователя с ID: {} в друзья к пользователю с ID: {}.", userId, friendId);
-        if (checkUser(userId) && checkUser(friendId)) {
-            User user = userStorage.getUser(userId);
-            User secondUser = userStorage.getUser(friendId);
-            user.getFriendList().add(friendId);
-            secondUser.getFriendList().add(userId);
-            log.info("Пользователи с ID: {} и {} добавлены в друзья.", userId, friendId);
-            return user;
-        } else {
-            throw new NotFoundException("Проверьте вводимые данные.");
-        }
-    }
-
-    public User deleteFriendFromUser(int userId, int friendId) {
-        log.info("Попытка удаления пользователя с ID: {} из друзей у  пользователя с ID: {}.", userId, friendId);
-        if (checkUser(userId) && checkUser(friendId)) {
-            User user = userStorage.getUser(userId);
-            User secondUser = userStorage.getUser(friendId);
-            user.getFriendList().remove(friendId);
-            secondUser.getFriendList().remove(userId);
-            log.info("Пользователь с ID: {} успешно удален из друзей у пользователя с ID: {}. ", friendId, userId);
-            return user;
-        }
-        throw new NotFoundException("Проверьте вводимые данные.");
-    }
-
-    public Collection<User> getUserFriends(int userId) {
-        log.info("Попытка получения списка друзей у пользователя с ID: {}.", userId);
-        checkUser(userId);
-        User user = userStorage.getUser(userId);
-        Collection<User> friendsId = user.getFriendList().stream().flatMap(friendId -> userStorage.getUsers().stream().filter(user1 -> user1.getId() == friendId)).toList();
-        log.info("Список друзей пользователя с ID: {} получен.", userId);
-        return friendsId;
-    }
-
-    public Collection<User> getCommonFriends(int id, int otherId) {
-        log.info("Попытка получения общих друзей у пользователей с ID: {} и {}.", id, otherId);
-        checkUser(id);
-        checkUser(otherId);
-        User user = userStorage.getUser(id);
-        User secondUser = userStorage.getUser(otherId);
-        return user.getFriendList().stream().filter(friendId -> secondUser.getFriendList().contains(friendId))
-                .map(userStorage::getUser).toList();
-
-    }
-
-    private boolean checkUser(int userId) {
-        log.info("Проверка пользователя по списку.");
-        if (userStorage.getUser(userId) == null) {
-            throw new NotFoundException("Пользователь с ID " + userId + " не найден.");
-        } else {
-            return true;
-        }
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public static void userValidation(User user) {
@@ -101,4 +34,79 @@ public class UserService {
             log.info("В поле name записано поле login. Новое значение: {}", user.getName());
         }
     }
+
+    public List<UserDto> getUsers() {
+        log.info("Попытка получения всех пользователей.");
+        return userRepository.findAll().stream().map(UserMapper::mapToUserDto).collect(Collectors.toList());
+    }
+
+    public List<UserDto> getFriends(int userId) {
+        log.info("Попытка получения списка друзей у пользователя.");
+        log.info("Проверка существования пользователя с ID: {} для получения френдлиста", userId);
+        User user = userRepository.findById(userId);
+
+        return userRepository.getFriends(userId).stream().map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList());
+
+    }
+
+    public UserDto createUser(UserDto userDto) {
+        log.info("Попытка создания пользователя.");
+        User user = UserMapper.mapToUser(userDto);
+        userValidation(user);
+        User savedUser = userRepository.saveUser(user);
+        return UserMapper.mapToUserDto(savedUser);
+
+    }
+
+    public UserDto updateUser(UserDto userDto) {
+        log.info("Попытка обновления пользователя");
+        log.info("Проверка существования пользователя с ID: {} для обновления", userDto.getId());
+        User findUser = userRepository.findById(userDto.getId());
+
+        User userForUpdate = UserMapper.mapToUser(userDto);
+        User updatedUser = userRepository.updateUser(userForUpdate);
+        userValidation(updatedUser);
+        return UserMapper.mapToUserDto(updatedUser);
+    }
+
+    public void addToFriends(int userId, int friendId) {
+        log.info("Попытка добавления пользователя с ID: {} в друзья к пользователю с ID: {}", userId, friendId);
+        log.info("Проверка существования пользователя с ID: {} для добавления в друзья.", userId);
+        User findUser = userRepository.findById(userId);
+        log.info("Проверка существования пользователя с ID: {} (добавляемый друг). ", friendId);
+        User findUser2 = userRepository.findById(friendId);
+
+        userRepository.addToFriends(userId, friendId);
+    }
+
+    public void deleteUser(int userId) {
+        log.info("Попытка удаления пользователя.");
+        log.info("Проверка существования пользователя с ID: {} для удаления.", userId);
+        User findUser = userRepository.findById(userId);
+
+        userRepository.deleteUser(userId);
+    }
+
+    public void deleteFromFriendList(int userId, int friendId) {
+        log.info("Попытка удаления пользователя с ID: {} из друзей у пользователю с ID: {}", userId, friendId);
+        log.info("Проверка существования пользователя с ID: {} для удаления из друзей.", userId);
+        User findUser = userRepository.findById(userId);
+        log.info("Проверка существования пользователя с ID: {} (удаляемый друг). ", friendId);
+        User findUser2 = userRepository.findById(friendId);
+
+        userRepository.deleteFromFriendList(userId, friendId);
+    }
+
+    public List<UserDto> getCommonFriends(int userId, int friendId) {
+        log.info("Попытка получения общих друзей между пользователями с ID: {} и {}", userId, friendId);
+        log.info("Проверка существования пользователя с ID: {} для получения списка общих друзей.", userId);
+        User findUser = userRepository.findById(userId);
+        log.info("Проверка существования пользователя с ID: {} . ", friendId);
+        User findUser2 = userRepository.findById(friendId);
+
+        return userRepository.getCommonFriends(userId, friendId).stream().map(UserMapper::mapToUserDto).collect(Collectors.toList());
+    }
+
+
 }
